@@ -58,55 +58,55 @@ class CamvidDataset(Dataset):
         img, label = self.center_crop(img, label, self.crop_size)
         img, label = self.img_transforms(img, label, self.crop_size)
 
-        sample = ['img':img, 'label':label]
+        sample = ['img': img, 'label': label]
         return sample
+
     def read_file(self,path):
     #从文件夹中读取数据
     
-    files_list = os.listdir(path) #读取文件夹下所有名称列表
-    '''
-    print(files_list)
-    返回
-    ['234.png','123.png','345.png', ...]
-    '''
-    file_path_list =[os.path.join(path,img) for img in files_list] #路径拼接 把path跟img名拼起来
-    '''
-    print(file_path_list)
-    返回
-    ['./camvid/train/234/png','./camvid/train/123.png', ...]
-    '''
-    file_path_list.sort() #路径排序 sort&sorted比较详见 https://www.jianshu.com/p/7be04a3f30cd
-    return file_path_list
-    '''
-    返回
-    ['./camvid/train/123.png','./camvid/train/234/png' ...]
-    '''
+        files_list = os.listdir(path) #读取文件夹下所有名称列表
+        '''
+        print(files_list)
+        返回
+        ['234.png','123.png','345.png', ...]
+        '''
+        file_path_list =[os.path.join(path,img) for img in files_list] #路径拼接 把path跟img名拼起来
+        '''
+        print(file_path_list)
+        返回
+        ['./camvid/train/234/png','./camvid/train/123.png', ...]
+        '''
+        file_path_list.sort() #路径排序 sort&sorted比较详见 https://www.jianshu.com/p/7be04a3f30cd
+        return file_path_list
+        '''
+      返回
+      ['./camvid/train/123.png','./camvid/train/234/png' ...]
+     '''
 
     def center_crop(self, data,label,crop_size):
     #裁剪输入的图片&标签的大小 
-    data = ttf.center_crop(data, crop_size)
-    label = ttf.center_crop(label, crop_size)
-    return data,label
+        data = ttf.center_crop(data, crop_size)
+        label = ttf.center_crop(label, crop_size)
+        return data,label
 
     def img_transforms(self, data,label,   )
     #把label里面的数据值变成整型
-    label = np.array(label) #label转np数组
-    label = Image.fromarray(label.astype('unit8')) #转int8 再转Imagearray
-
+        label = np.array(label) #label转np数组
+        label = Image.fromarray(label.astype('unit8')) #转int8 再转Imagearray
     #针对原图操作
-    transforms_img = transforms.Compose(
-        [
-        transforms.toTensor() #转张量
-        transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0,224, 0.225]) #标准化
-        ]
-    )
-    img = transforms_img(img)
-    #针对标签操作
-    ##编码
-    label = label_processor.encode_label_img(label)
-    label = torch.from_numpy(label) #转张量方式 关于torch.from_numpy VS torch.Tensor 详细： https://blog.csdn.net/github_28260175/article/details/105382060
+        transforms_img = transforms.Compose(
+            [
+         transforms.toTensor() #转张量
+            transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0,224, 0.225]) #标准化
+         ]
+        )
+        img = transforms_img(img)
+        #针对标签操作
+        ##编码
+        label = label_processor.encode_label_img(label)
+        label = torch.from_numpy(label) #转张量方式 关于torch.from_numpy VS torch.Tensor 详细： https://blog.csdn.net/github_28260175/article/details/105382060
     
-    return img, label
+        return img, label
 
 
 
@@ -181,7 +181,7 @@ if __name__ = "__main__"
     VAL_LABEL =
     TEST_ROOT = 
     TEST_LABEL =
-    crop_size = (352,480)
+    crop_size = 
     Cam_train = 
     Cam_val = 
     Cam_test =
