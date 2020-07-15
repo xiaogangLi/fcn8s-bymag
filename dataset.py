@@ -1,5 +1,5 @@
 import os
-import torch
+import torch 
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -15,6 +15,7 @@ dataset.py 任务
 #3 标签编码
 #4 numpy to tensor 
 #5 实例化数据类
+₍₍ (̨̡ ‾᷄ᗣ‾᷅ )̧̢ ₎₎
 '''
 
 
@@ -56,11 +57,10 @@ class CamvidDataset(Dataset):
         #中心裁剪 需要输入有 图片、标签、裁剪尺寸
         img, label = self.center_crop(img, label, self.crop_size)
         img, label = self.img_transforms(img, label, self.crop_size)
-        return img, label
 
-
-
-def read_file(self,path):
+        sample = ['img':img, 'label':label]
+        return sample
+    def read_file(self,path):
     #从文件夹中读取数据
     
     files_list = os.listdir(path) #读取文件夹下所有名称列表
@@ -82,20 +82,106 @@ def read_file(self,path):
     ['./camvid/train/123.png','./camvid/train/234/png' ...]
     '''
 
-
-def center_crop(self, data,label,crop_size):
+    def center_crop(self, data,label,crop_size):
     #裁剪输入的图片&标签的大小 
-
     data = ttf.center_crop(data, crop_size)
     label = ttf.center_crop(label, crop_size)
     return data,label
 
-def img_transforms(self, data,label,   )
-    #hmmm.. 数值处理就放这
+    def img_transforms(self, data,label,   )
+    #把label里面的数据值变成整型
+    label = np.array(label) #label转np数组
+    label = Image.fromarray(label.astype('unit8')) #转int8 再转Imagearray
+
+    #针对原图操作
+    transforms_img = transforms.Compose(
+        [
+        transforms.toTensor() #转张量
+        transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0,224, 0.225]) #标准化
+        ]
+    )
+    img = transforms_img(img)
+    #针对标签操作
+    ##编码
+    label = label_processor.encode_label_img(label)
+    label = torch.from_numpy(label) #转张量方式 关于torch.from_numpy VS torch.Tensor 详细： https://blog.csdn.net/github_28260175/article/details/105382060
+    
+    return img, label
 
 
 
+class LabelProcessor:
+    '''
+    对标签图像的编码
+    '''
+    def __init__(self, file_path):
+        self.colormap = self.read_color_map(file_path)
+        self.cm21b1 = self.encode_label_pix(self.colormap)
 
-train_imgs = read_file(TRAIN_ROOT)
-train_labels = read_file(TRAIN_LABELS)
+    '''
+    静态方法修饰器，可以理解为定义在累中的普通函数，用self.___调用
+    静态方法内部，不能实例属性和实列对象，即不可以调用self。相关的内容
+    使用的原因是为了程序设计需要：代码简介，封装功能等。
+    详细：关于类方法、静态方法和实例方法的详解 可以前后切换知识 http://c.biancheng.net/view/4552.html
+    '''
 
+    #camvid比别的要麻烦一点的是，标注是个png图，然后要读取csv获取相应类别
+    #而不是直接读取 class=[] &C colormap[]的东西
+    @staticmethod
+    def read_color_map(file_path):
+        pd_label_color = pd.read_csv(file_path, sep=',') #pd.read_csv() https://blog.csdn.net/The_Time_Runner/article/details/86187900
+        colormap = {}
+        for iter in range(len(pd_label_color.index)):
+            color = [tmp['r'], tmp['g'], tmp['b']]
+            colormap.append(color)
+        return read_color_map
+    
+    #数据处理-数据结构-哈希表 建立映射关系，提高查询效率
+    #read_color_map完成了 颜色-标签 对应关系
+    #encode_label_pix则完成 color-像素-标签 对应关系
+    #参考对PASCAL VOC处理(但少一层映射关系): https://blog.csdn.net/qq_32146369/article/details/106292998
+    
+    '''
+    h希函数：(cm[0]*256 +cm[1]）*256 +cm[2]
+    哈希映射：cm2lbl[(cm[0]*256 +cm[1])*256 +cm[2]] = i 
+    哈希表：cm2lbl
+
+    举个栗子儿～ 
+    一个像素点  P(128,64,128)，由编码函数（P[0]*256 + P[1]）*256 + P[2]转化为整数（8405120）,
+    将这个数字作为像素点P在cm2lbl编码表中索引cm2lbl[8405120]
+    去查询X像素点P[128,64,128]对应的检测类别i
+    '''
+    
+    #哈希表
+    @staticmethod
+    def encode_label_pix(colormap):
+
+        cm2lbl = np.zeros(256**3) # 每个像素点有 0 ~ 255 的选择，RGB 三个通道
+        for i,cm in enumerate(colormap):
+            cm2lbl[(cm[0]*256+cm[1])*256+cm[2]] = i # 建立索引
+        return cm21b1
+    #哈希映射
+    #矩阵化批量操作像素点的编码 输入像素P（，，）即索引值，在哈希表查找，返回类别
+    def encode_label_img(self,img):
+        data = np.array(img, dtype='int32')
+        idx = data[;, ;, 0] * 256 + data[;, ;, 1] * 256 + data[;, ;, 2]
+        return np.array(self.cm21b1[idx], dtype='int64')
+
+
+
+label_processor = LabelProcessor(cfg.class_dict_path)
+
+ 
+if __name__ = "__main__"
+
+
+    TRAIN_ROOT = 
+    TRAIN_LABEL =
+    VAL_ROOT = 
+    VAL_LABEL =
+    TEST_ROOT = 
+    TEST_LABEL =
+    crop_size = (352,480)
+    Cam_train = 
+    Cam_val = 
+    Cam_test =

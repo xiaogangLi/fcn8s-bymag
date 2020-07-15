@@ -1,0 +1,11 @@
+
+DATASET = ['CamVid,12']
+
+crop_size = (512,512)
+
+TRAIN_ROOT = 
+TRAIN_LABEL =
+VAL_ROOT = 
+VAL_LABEL =
+TEST_ROOT = 
+TEST_LABEL =
