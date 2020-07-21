@@ -58,7 +58,7 @@ class CamvidDataset(Dataset):
         img, label = self.center_crop(img, label, self.crop_size)
         img, label = self.img_transforms(img, label, self.crop_size)
 
-        sample = ['img': img, 'label': label]
+        sample = {'img': img, 'label': label}
         return sample
 
     def read_file(self,path):
@@ -89,16 +89,16 @@ class CamvidDataset(Dataset):
         label = ttf.center_crop(label, crop_size)
         return data,label
 
-    def img_transforms(self, data,label,   )
+    def img_transform(self, img, label):
     #把label里面的数据值变成整型
         label = np.array(label) #label转np数组
         label = Image.fromarray(label.astype('unit8')) #转int8 再转Imagearray
     #针对原图操作
-        transforms_img = transforms.Compose(
+        transform_img = transforms.Compose(
             [
-         transforms.toTensor() #转张量
-            transforms.Normalize([0.485, 0.456, 0.406],[0.229, 0,224, 0.225]) #标准化
-         ]
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ]
         )
         img = transforms_img(img)
         #针对标签操作
@@ -164,7 +164,7 @@ class LabelProcessor:
     #矩阵化批量操作像素点的编码 输入像素P（，，）即索引值，在哈希表查找，返回类别
     def encode_label_img(self,img):
         data = np.array(img, dtype='int32')
-        idx = data[;, ;, 0] * 256 + data[;, ;, 1] * 256 + data[;, ;, 2]
+        idx = data[:, :, 0] * 256 + data[:, :, 1] * 256 + data[:, :, 2]
         return np.array(self.cm21b1[idx], dtype='int64')
 
 
@@ -172,7 +172,7 @@ class LabelProcessor:
 label_processor = LabelProcessor(cfg.class_dict_path)
 
  
-if __name__ = "__main__"
+if __name__ == "__main__":
 
 
     TRAIN_ROOT = 
