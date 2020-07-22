@@ -1,15 +1,14 @@
-‘’‘
+'''
 1. 读取数据
 2. 加载权重
 3. 测试&打印结果
-’‘’
+'''
 
 import torch as t
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-
-from evalution_segmentaion import eval_semantic_segmentation
+from eval_semantic_segmentation import eval_semantic_segmentation
 from dataset import LoadDataset
 from Models import FCN
 import cfg
@@ -21,7 +20,7 @@ BATCH_SIZE = 4
 miou_list = [0]
 
 Load_test = LoadDataset([cfg.TEST_ROOT, cfg.TEST_LABEL], cfg.crop_size)
-test_data = DataLoader(Load_test, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+test_data = DataLoader(Load_test, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
 net = FCN.FCN(num_class)
 net.eval()
